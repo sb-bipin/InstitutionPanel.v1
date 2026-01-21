@@ -1,83 +1,96 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using InstitutionPanel.Models.Common;
+using InstitutionPanel.Models.DTOs;
+using InstitutionPanel.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InstitutionPanel.Controllers
 {
+    [Route("[controller]")]
     public class AuthController : Controller
     {
-        // GET: AuthController
-        public ActionResult Index()
-        {
-            return View();
-        }
+        private readonly IAuthService _authService;
 
-        // GET: AuthController/Details/5
-        public ActionResult Details(int id)
+        public AuthController(IAuthService authService)
         {
-            return View();
+            _authService = authService;
         }
+        #region Register User Section
 
-        // GET: AuthController/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
+        [AllowAnonymous]
+        [HttpGet("Register")]
+        public IActionResult Register() => View();
 
-        // POST: AuthController/Create
-        [HttpPost]
+
+        [AllowAnonymous]
+        [HttpPost("Register")]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<IActionResult> Register(RegisterDto model)
         {
-            try
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var result = await _authService.RegisterAsync(model);
+
+            if (!result.Success)
             {
-                return RedirectToAction(nameof(Index));
+                ModelState.AddModelError(string.Empty, result.Message);
+                return View(model);
             }
-            catch
-            {
-                return View();
-            }
+
+            TempData["SuccessMessage"] = "Registration successful! Please login.";
+
+            return RedirectToAction("Login");
         }
 
-        // GET: AuthController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
 
-        // POST: AuthController/Edit/5
-        [HttpPost]
+        #endregion
+
+        #region Login User section
+
+
+        [AllowAnonymous]
+        [HttpGet("Login")]
+        public IActionResult Login() => View();
+
+
+        [AllowAnonymous]
+        [HttpPost("Login")]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<IActionResult> Login(LoginDto model)
         {
-            try
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var result = await _authService.LoginAsync(model);
+
+            if (!result.Success)
             {
-                return RedirectToAction(nameof(Index));
+                ModelState.AddModelError(string.Empty, result.Message);
+                return View(model);
             }
-            catch
-            {
-                return View();
-            }
+
+            HttpContext.Session.SetString("JWToken", result.Token!);
+
+            return RedirectToAction("Index", "Home");
         }
 
-        // GET: AuthController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
+        #endregion
 
-        // POST: AuthController/Delete/5
-        [HttpPost]
+        #region Logout section
+
+        [HttpPost("Logout")]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<IActionResult> Logout()
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            await _authService.LogoutAsync();
+
+            HttpContext.Session.Remove("JWToken");
+
+            TempData["SuccessMessage"] = "Logged out successfully!";
+            return RedirectToAction("Login");
         }
+
+        #endregion
     }
 }
