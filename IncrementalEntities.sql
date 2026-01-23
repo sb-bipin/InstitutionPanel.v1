@@ -103,3 +103,18 @@ COMMIT;
 GO
 
 --End : Initiated db migration script for EF Core version 9.0.12 --Bipin Poudel-- 2026 Jan 21
+
+
+--Start : New fields added --Bipin Poudel-- 2026 Jan 23
+
+ALTER TABLE [AspNetUsers] ADD [CreatedAt] datetime2 NOT NULL DEFAULT '0001-01-01T00:00:00.0000000';
+
+ALTER TABLE [AspNetUsers] ADD [CreatedBy] nvarchar(max) NOT NULL DEFAULT N'';
+
+ALTER TABLE [AspNetUsers] ADD [FirstName] nvarchar(max) NULL;
+
+ALTER TABLE [AspNetUsers] ADD [IsActive] bit NOT NULL DEFAULT CAST(0 AS bit);
+
+ALTER TABLE [AspNetUsers] ADD [LastName] nvarchar(max) NULL;
+
+--End : New fields added --Bipin Poudel-- 2026 Jan 23
