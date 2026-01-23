@@ -1,12 +1,14 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using InstitutionPanel.Models.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
 
 namespace InstitutionPanel.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext
+        : IdentityDbContext<ApplicationUser, IdentityRole, string>
     {
-        public ApplicationDbContext(DbContextOptions options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
@@ -14,15 +16,6 @@ namespace InstitutionPanel.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
-            // Customize Identity table names if needed
-            //builder.Entity(entity => {
-            //    entity.ToTable("Users");
-            //});
-
-            //builder.Entity(entity => {
-            //    entity.ToTable("Roles");
-            //});
         }
     }
 }

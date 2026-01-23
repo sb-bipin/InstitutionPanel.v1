@@ -3,14 +3,12 @@ using InstitutionPanel.Models.Entities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 namespace InstitutionPanel.Configuration
 {
-    public static class DependencyInjection
+    public static class IdentityServiceExtensions
     {
         public static IServiceCollection AddIdentityServices(
             this IServiceCollection services,
@@ -22,11 +20,11 @@ namespace InstitutionPanel.Configuration
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
+                options.Password.RequiredLength = 8;
                 options.Password.RequireDigit = true;
-                options.Password.RequiredLength = 6;
-                options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = true;
                 options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = false;
 
                 options.User.RequireUniqueEmail = true;
                 options.SignIn.RequireConfirmedEmail = false;
@@ -47,16 +45,16 @@ namespace InstitutionPanel.Configuration
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
+                    ClockSkew = TimeSpan.Zero,
 
                     ValidIssuer = configuration["Jwt:Issuer"],
                     ValidAudience = configuration["Jwt:Audience"],
-
                     IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(
-                            configuration["Jwt:Key"]
-                            ?? throw new InvalidOperationException("JWT Key is missing")))
+                        Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!))
                 };
             });
+
+            services.AddAuthorization();
 
             return services;
         }
