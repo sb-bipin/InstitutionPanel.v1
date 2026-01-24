@@ -42,6 +42,7 @@ namespace InstitutionPanel.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
@@ -50,6 +51,9 @@ namespace InstitutionPanel.Migrations
 
                     b.Property<string>("FirstName")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("InstitutionId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
@@ -64,6 +68,7 @@ namespace InstitutionPanel.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("NormalizedEmail")
+                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
@@ -86,11 +91,20 @@ namespace InstitutionPanel.Migrations
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("InstitutionId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -101,6 +115,51 @@ namespace InstitutionPanel.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("InstitutionPanel.Models.Entities.Institution", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("CreatedAt")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("UpdatedAt")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UpdatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Institutions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -234,6 +293,81 @@ namespace InstitutionPanel.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("InstitutionPanel.Models.Entities.ApplicationUser", b =>
+                {
+                    b.HasOne("InstitutionPanel.Models.Entities.Institution", "Institution")
+                        .WithMany()
+                        .HasForeignKey("InstitutionId");
+
+                    b.Navigation("Institution");
+                });
+
+            modelBuilder.Entity("InstitutionPanel.Models.Entities.Institution", b =>
+                {
+                    b.OwnsOne("InstitutionPanel.Models.ValueObject.ContactNumber", "ContactNo", b1 =>
+                        {
+                            b1.Property<Guid>("InstitutionId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("Value")
+                                .HasMaxLength(9)
+                                .HasColumnType("nvarchar(9)")
+                                .HasColumnName("ContactNo");
+
+                            b1.HasKey("InstitutionId");
+
+                            b1.ToTable("Institutions");
+
+                            b1.WithOwner()
+                                .HasForeignKey("InstitutionId");
+                        });
+
+                    b.OwnsOne("InstitutionPanel.Models.ValueObject.Email", "Email", b1 =>
+                        {
+                            b1.Property<Guid>("InstitutionId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("Value")
+                                .HasMaxLength(150)
+                                .HasColumnType("nvarchar(150)")
+                                .HasColumnName("Email");
+
+                            b1.HasKey("InstitutionId");
+
+                            b1.ToTable("Institutions");
+
+                            b1.WithOwner()
+                                .HasForeignKey("InstitutionId");
+                        });
+
+                    b.OwnsOne("InstitutionPanel.Models.ValueObject.PhoneNumber", "PhoneNo", b1 =>
+                        {
+                            b1.Property<Guid>("InstitutionId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("Value")
+                                .HasMaxLength(10)
+                                .HasColumnType("nvarchar(10)")
+                                .HasColumnName("PhoneNo");
+
+                            b1.HasKey("InstitutionId");
+
+                            b1.ToTable("Institutions");
+
+                            b1.WithOwner()
+                                .HasForeignKey("InstitutionId");
+                        });
+
+                    b.Navigation("ContactNo")
+                        .IsRequired();
+
+                    b.Navigation("Email")
+                        .IsRequired();
+
+                    b.Navigation("PhoneNo")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
