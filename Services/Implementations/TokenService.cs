@@ -24,7 +24,6 @@ namespace InstitutionPanel.Services.Implementations
 
         public async Task<string> GenerateTokenAsync(ApplicationUser user)
         {
-            // ✅ FIX: Use List<Claim>
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
@@ -33,7 +32,6 @@ namespace InstitutionPanel.Services.Implementations
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
-            // Add roles
             var roles = await _userManager.GetRolesAsync(user);
             claims.AddRange(
                 roles.Select(role => new Claim(ClaimTypes.Role, role))
@@ -51,7 +49,7 @@ namespace InstitutionPanel.Services.Implementations
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddHours(3), // ✅ UTC recommended
+                expires: DateTime.UtcNow.AddHours(1),
                 signingCredentials: creds
             );
 
