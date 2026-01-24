@@ -118,3 +118,57 @@ ALTER TABLE [AspNetUsers] ADD [IsActive] bit NOT NULL DEFAULT CAST(0 AS bit);
 ALTER TABLE [AspNetUsers] ADD [LastName] nvarchar(max) NULL;
 
 --End : New fields added --Bipin Poudel-- 2026 Jan 23
+
+--Start : New fields added --Bipin Poudel-- 2026 Jan 24
+
+ALTER TABLE [AspNetUsers] ADD [InstitutionId] uniqueidentifier NULL;
+
+ALTER TABLE [AspNetUsers] ADD [UpdatedAt] nvarchar(max) NULL DEFAULT N'';
+
+ALTER TABLE [AspNetUsers] ADD [UpdatedBy] nvarchar(max) NULL DEFAULT N'';
+
+CREATE TABLE [Institutions] (
+    [Id] uniqueidentifier NOT NULL,
+    [Name] nvarchar(100) NOT NULL,
+    [Email] nvarchar(150) NULL,
+    [Description] nvarchar(500) NOT NULL,
+    [Address] nvarchar(100) NOT NULL,
+    [ContactNo] nvarchar(9) NULL,
+    [PhoneNo] nvarchar(10) NULL,
+    [IsActive] bit NOT NULL,
+    [CreatedAt] nvarchar(max) NOT NULL,
+    [CreatedBy] nvarchar(max) NOT NULL,
+    [UpdatedAt] nvarchar(max) NULL,
+    [UpdatedBy] nvarchar(max) NULL,
+    CONSTRAINT [PK_Institutions] PRIMARY KEY ([Id])
+);
+
+CREATE INDEX [IX_AspNetUsers_InstitutionId] ON [AspNetUsers] ([InstitutionId]);
+
+ALTER TABLE [AspNetUsers] ADD CONSTRAINT [FK_AspNetUsers_Institutions_InstitutionId] FOREIGN KEY ([InstitutionId]) REFERENCES [Institutions] ([Id]);
+
+
+DECLARE @var1 sysname;
+SELECT @var1 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[AspNetUsers]') AND [c].[name] = N'Email');
+IF @var1 IS NOT NULL EXEC(N'ALTER TABLE [AspNetUsers] DROP CONSTRAINT [' + @var1 + '];');
+UPDATE [AspNetUsers] SET [Email] = N'' WHERE [Email] IS NULL;
+ALTER TABLE [AspNetUsers] ALTER COLUMN [Email] nvarchar(256) NOT NULL;
+ALTER TABLE [AspNetUsers] ADD DEFAULT N'' FOR [Email];
+
+
+DROP INDEX [EmailIndex] ON [AspNetUsers];
+DECLARE @var2 sysname;
+SELECT @var2 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[AspNetUsers]') AND [c].[name] = N'NormalizedEmail');
+IF @var2 IS NOT NULL EXEC(N'ALTER TABLE [AspNetUsers] DROP CONSTRAINT [' + @var2 + '];');
+UPDATE [AspNetUsers] SET [NormalizedEmail] = N'' WHERE [NormalizedEmail] IS NULL;
+ALTER TABLE [AspNetUsers] ALTER COLUMN [NormalizedEmail] nvarchar(256) NOT NULL;
+ALTER TABLE [AspNetUsers] ADD DEFAULT N'' FOR [NormalizedEmail];
+CREATE INDEX [EmailIndex] ON [AspNetUsers] ([NormalizedEmail]);
+
+--End : New fields added --Bipin Poudel-- 2026 Jan 24
