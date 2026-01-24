@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace InstitutionPanel.Controllers
 {
-    [Route("[controller]")]
+    [AllowAnonymous]
     public class AuthController : Controller
     {
         private readonly IAuthService _authService;
@@ -15,15 +15,12 @@ namespace InstitutionPanel.Controllers
         {
             _authService = authService;
         }
-        #region Register User Section
 
-        [AllowAnonymous]
-        [HttpGet("Register")]
+        #region Register User Section
+        [HttpGet]
         public IActionResult Register() => View();
 
-
-        [AllowAnonymous]
-        [HttpPost("Register")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterDto model)
         {
@@ -31,7 +28,6 @@ namespace InstitutionPanel.Controllers
                 return View(model);
 
             var result = await _authService.RegisterAsync(model);
-
             if (!result.Success)
             {
                 ModelState.AddModelError(string.Empty, result.Message);
@@ -39,23 +35,15 @@ namespace InstitutionPanel.Controllers
             }
 
             TempData["SuccessMessage"] = "Registration successful! Please login.";
-
             return RedirectToAction("Login");
         }
-
-
         #endregion
 
         #region Login User section
-
-
-        [AllowAnonymous]
-        [HttpGet("Login")]
+        [HttpGet]
         public IActionResult Login() => View();
 
-
-        [AllowAnonymous]
-        [HttpPost("Login")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginDto model)
         {
@@ -63,7 +51,6 @@ namespace InstitutionPanel.Controllers
                 return View(model);
 
             var result = await _authService.LoginAsync(model);
-
             if (!result.Success)
             {
                 ModelState.AddModelError(string.Empty, result.Message);
@@ -72,25 +59,29 @@ namespace InstitutionPanel.Controllers
 
             HttpContext.Session.SetString("JWToken", result.Token!);
 
+            HttpContext.Response.Cookies.Append("JWToken", result.Token!,
+                        new CookieOptions
+                        {
+                            HttpOnly = true,
+                            Secure = true, 
+                            SameSite = SameSiteMode.Strict,
+                            Expires = DateTimeOffset.UtcNow.AddHours(1)
+                        });
+
             return RedirectToAction("Index", "Home");
         }
-
         #endregion
 
         #region Logout section
-
-        [HttpPost("Logout")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             await _authService.LogoutAsync();
-
             HttpContext.Session.Remove("JWToken");
-
             TempData["SuccessMessage"] = "Logged out successfully!";
             return RedirectToAction("Login");
         }
-
         #endregion
     }
 }
