@@ -23,5 +23,8 @@ namespace InstitutionPanel.Models.DTOs
 
         [Required]
         public string LastName { get; set; } = string.Empty;
+
+        [Required]
+        public Guid? InstitutionId { get; set; }
     }
 }
