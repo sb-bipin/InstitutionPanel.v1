@@ -23,11 +23,9 @@ namespace InstitutionPanel.Services.Implementations
 
         public async Task<(bool Success, string Message, string? Token)> RegisterAsync(RegisterDto model)
         {
-            var existingUser = await _userManager.FindByEmailAsync(model.Email);
-            if (existingUser != null)
-            {
+            var userExists = await _userManager.FindByEmailAsync(model.Email);
+            if (userExists != null)
                 return (false, "User already exists", null);
-            }
 
             var user = new ApplicationUser
             {
@@ -35,18 +33,21 @@ namespace InstitutionPanel.Services.Implementations
                 Email = model.Email,
                 FirstName = model.FirstName,
                 LastName = model.LastName,
-                EmailConfirmed = true,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow,
-                CreatedBy = "Self"
+                CreatedBy = "Self",
+                InstitutionId = model.InstitutionId
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (!result.Succeeded)
             {
-                return (false, "Registration failed", null);
+                var error = string.Join(", ", result.Errors.Select(e => e.Description));
+                return (false, error, null);
             }
+
+            await _signInManager.SignInAsync(user, isPersistent: false);
 
             var token = await _tokenService.GenerateTokenAsync(user);
             return (true, "Registration successful", token);
@@ -55,22 +56,20 @@ namespace InstitutionPanel.Services.Implementations
         public async Task<(bool Success, string Message, string? Token)> LoginAsync(LoginDto model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
-
             if (user == null)
-            {
                 return (false, "Invalid credentials", null);
-            }
 
-            var result = await _signInManager.PasswordSignInAsync(
-                user,
-                model.Password,
-                model.RememberMe,
-                lockoutOnFailure: false);
+            if (!user.IsActive)
+                return (false, "User is inactive", null);
+
+            var result = await _signInManager
+                                        .PasswordSignInAsync(model.Email,
+                                                            model.Password,
+                                                            model.RememberMe,
+                                                            lockoutOnFailure: false);
 
             if (!result.Succeeded)
-            {
                 return (false, "Invalid credentials", null);
-            }
 
             var token = await _tokenService.GenerateTokenAsync(user);
             return (true, "Login successful", token);
