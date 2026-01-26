@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using InstitutionPanel.Models.ValueObject;
+using System.ComponentModel.DataAnnotations;
 
 namespace InstitutionPanel.Models.DTOs
 {
@@ -6,23 +7,23 @@ namespace InstitutionPanel.Models.DTOs
     {
         [Required]
         [EmailAddress]
-        public string Email { get; set; } = string.Empty;
+        public Email Email { get; set; }
 
         [Required]
         [MinLength(8),MaxLength(30)]
         [DataType(DataType.Password)]
-        public string Password { get; set; } = string.Empty;
+        public string Password { get; set; }
 
         [Required]
         [DataType(DataType.Password)]
         [Compare(nameof(Password), ErrorMessage = "Passwords do not match")]
-        public string ConfirmPassword { get; set; } = string.Empty;
+        public string ConfirmPassword { get; set; }
 
         [Required]
-        public string FirstName { get; set; } = string.Empty;
+        public string FirstName { get; set; }
 
         [Required]
-        public string LastName { get; set; } = string.Empty;
+        public string LastName { get; set; }
 
         [Required]
         public Guid? InstitutionId { get; set; }
