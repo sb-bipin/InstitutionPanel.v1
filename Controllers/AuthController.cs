@@ -41,7 +41,21 @@ namespace InstitutionPanel.Controllers
 
         #region Login User section
         [HttpGet]
-        public IActionResult Login() => View();
+        public IActionResult Login()
+        {
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            var userType = HttpContext.Session.GetString("UserType");
+            if (!string.IsNullOrEmpty(userType))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            return View();
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -77,8 +91,7 @@ namespace InstitutionPanel.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
-            await _authService.LogoutAsync();
-            HttpContext.Session.Remove("JWToken");
+            await _authService.LogoutAsync(HttpContext);
             TempData["SuccessMessage"] = "Logged out successfully!";
             return RedirectToAction("Login");
         }

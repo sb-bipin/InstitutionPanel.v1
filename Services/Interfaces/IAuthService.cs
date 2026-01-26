@@ -6,7 +6,7 @@ namespace InstitutionPanel.Services.Interfaces
     {
         Task<(bool Success, string Message, string? Token)> RegisterAsync(RegisterDto model);
         Task<(bool Success, string Message, string? Token)> LoginAsync(LoginDto model);
-        Task LogoutAsync();
+        Task LogoutAsync(HttpContext httpContext);
         Task<(bool Success, string Message)> ChangePasswordAsync(string userId,
                                                                 string currentPassword,
                                                                 string newPassword);

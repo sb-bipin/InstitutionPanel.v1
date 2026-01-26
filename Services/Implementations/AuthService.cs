@@ -1,6 +1,7 @@
 ﻿using InstitutionPanel.Models.DTOs;
 using InstitutionPanel.Models.Entities;
 using InstitutionPanel.Services.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 
 namespace InstitutionPanel.Services.Implementations
@@ -80,9 +81,17 @@ namespace InstitutionPanel.Services.Implementations
             return (true, "Login successful", token);
         }
 
-        public async Task LogoutAsync()
+        public async Task LogoutAsync(HttpContext httpContext)
         {
             await _signInManager.SignOutAsync();
+
+            httpContext.Session.Clear();
+
+            if (httpContext.Request.Cookies.ContainsKey("JWToken"))
+            {
+                httpContext.Response.Cookies.Delete("JWToken");
+            }
+
         }
 
         public async Task<(bool Success, string Message)> ChangePasswordAsync(
