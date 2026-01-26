@@ -1,5 +1,4 @@
-﻿using InstitutionPanel.Models.Enums;
-using InstitutionPanel.Models.ValueObject;
+﻿using InstitutionPanel.Models.ValueObject;
 using Microsoft.AspNetCore.Identity;
 
 namespace InstitutionPanel.Models.Entities

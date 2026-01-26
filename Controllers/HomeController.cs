@@ -1,11 +1,12 @@
 using System.Diagnostics;
+using InstitutionPanel.Filters;
 using InstitutionPanel.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InstitutionPanel.Controllers
 {
-    [Authorize]
+    [CustomAuthorize(AllowedUserTypes = "SuperAdmin,InstitutionAdmin")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
