@@ -172,3 +172,18 @@ ALTER TABLE [AspNetUsers] ADD DEFAULT N'' FOR [NormalizedEmail];
 CREATE INDEX [EmailIndex] ON [AspNetUsers] ([NormalizedEmail]);
 
 --End : New fields added --Bipin Poudel-- 2026 Jan 24
+
+
+--Start : UserType is added --Bipin Poudel-- 2026 Jan 26
+
+DECLARE @var3 sysname;
+SELECT @var3 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[AspNetUsers]') AND [c].[name] = N'UpdatedBy');
+IF @var3 IS NOT NULL EXEC(N'ALTER TABLE [AspNetUsers] DROP CONSTRAINT [' + @var3 + '];');
+ALTER TABLE [AspNetUsers] ALTER COLUMN [UpdatedBy] nvarchar(max) NULL;
+
+ALTER TABLE [AspNetUsers] ADD [UserType] tinyint NOT NULL DEFAULT CAST(0 AS tinyint);
+
+--End : UserType is added --Bipin Poudel-- 2026 Jan 26

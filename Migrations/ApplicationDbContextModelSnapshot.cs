@@ -95,12 +95,14 @@ namespace InstitutionPanel.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UpdatedBy")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
+
+                    b.Property<byte>("UserType")
+                        .HasColumnType("tinyint");
 
                     b.HasKey("Id");
 
