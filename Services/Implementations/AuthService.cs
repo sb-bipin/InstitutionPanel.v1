@@ -36,7 +36,8 @@ namespace InstitutionPanel.Services.Implementations
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow,
                 CreatedBy = "Self",
-                InstitutionId = model.InstitutionId
+                InstitutionId = model.InstitutionId,
+                UserType = UserType.InstitutionAdmin
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -55,8 +56,12 @@ namespace InstitutionPanel.Services.Implementations
 
         public async Task<(bool Success, string Message, string? Token)> LoginAsync(LoginDto model)
         {
+            if (string.IsNullOrWhiteSpace(model.Email) || string.IsNullOrWhiteSpace(model.Password))
+                return (false, "Email or password cannot be empty", null);
+
             var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null)
+
+            if (user is null)
                 return (false, "Invalid credentials", null);
 
             if (!user.IsActive)
@@ -87,7 +92,7 @@ namespace InstitutionPanel.Services.Implementations
         {
             var user = await _userManager.FindByIdAsync(userId);
 
-            if (user == null)
+            if (user is null)
             {
                 return (false, "User not found");
             }
