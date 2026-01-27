@@ -1,5 +1,5 @@
 ﻿using InstitutionPanel.Models.Common;
-using InstitutionPanel.Models.DTOs;
+using InstitutionPanel.Models.DTOs.Auth;
 using InstitutionPanel.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

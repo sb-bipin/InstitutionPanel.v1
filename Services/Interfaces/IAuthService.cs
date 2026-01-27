@@ -1,4 +1,4 @@
-﻿using InstitutionPanel.Models.DTOs;
+﻿using InstitutionPanel.Models.DTOs.Auth;
 
 namespace InstitutionPanel.Services.Interfaces
 {

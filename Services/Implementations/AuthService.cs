@@ -1,4 +1,4 @@
-﻿using InstitutionPanel.Models.DTOs;
+﻿using InstitutionPanel.Models.DTOs.Auth;
 using InstitutionPanel.Models.Entities;
 using InstitutionPanel.Services.Interfaces;
 using Microsoft.AspNetCore.Http;

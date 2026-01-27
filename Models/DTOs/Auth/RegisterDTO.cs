@@ -1,7 +1,7 @@
 ﻿using InstitutionPanel.Models.ValueObject;
 using System.ComponentModel.DataAnnotations;
 
-namespace InstitutionPanel.Models.DTOs
+namespace InstitutionPanel.Models.DTOs.Auth
 {
     public class RegisterDto
     {
