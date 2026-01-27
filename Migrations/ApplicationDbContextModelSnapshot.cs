@@ -152,11 +152,9 @@ namespace InstitutionPanel.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("UpdatedAt")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdatedBy")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

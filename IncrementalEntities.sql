@@ -187,3 +187,24 @@ ALTER TABLE [AspNetUsers] ALTER COLUMN [UpdatedBy] nvarchar(max) NULL;
 ALTER TABLE [AspNetUsers] ADD [UserType] tinyint NOT NULL DEFAULT CAST(0 AS tinyint);
 
 --End : UserType is added --Bipin Poudel-- 2026 Jan 26
+
+
+--Start :Make Modified date and by flag of common entites as nullable --Bipin Poudel-- 2026 Jan 27
+
+DECLARE @var4 sysname;
+SELECT @var4 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Institutions]') AND [c].[name] = N'UpdatedBy');
+IF @var4 IS NOT NULL EXEC(N'ALTER TABLE [Institutions] DROP CONSTRAINT [' + @var4 + '];');
+ALTER TABLE [Institutions] ALTER COLUMN [UpdatedBy] nvarchar(max) NULL;
+
+DECLARE @var5 sysname;
+SELECT @var5 = [d].[name]
+FROM [sys].[default_constraints] [d]
+INNER JOIN [sys].[columns] [c] ON [d].[parent_column_id] = [c].[column_id] AND [d].[parent_object_id] = [c].[object_id]
+WHERE ([d].[parent_object_id] = OBJECT_ID(N'[Institutions]') AND [c].[name] = N'UpdatedAt');
+IF @var5 IS NOT NULL EXEC(N'ALTER TABLE [Institutions] DROP CONSTRAINT [' + @var5 + '];');
+ALTER TABLE [Institutions] ALTER COLUMN [UpdatedAt] nvarchar(max) NULL;
+
+--End :Make Modified date and by flag of common entites as nullable --Bipin Poudel-- 2026 Jan 27
