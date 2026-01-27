@@ -1,5 +1,7 @@
 ﻿using InstitutionPanel.Data;
 using InstitutionPanel.Models.Entities;
+using InstitutionPanel.Services.Implementations;
+using InstitutionPanel.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -55,6 +57,12 @@ namespace InstitutionPanel.Configuration
             });
 
             services.AddAuthorization();
+
+            services.AddHttpContextAccessor();
+
+            //inject services here
+            services.AddScoped<IInstitutionService, InstitutionService>();
+
 
             return services;
         }
