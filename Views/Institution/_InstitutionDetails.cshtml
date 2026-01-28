@@ -1,0 +1,44 @@
+﻿@model InstitutionPanel.Models.ViewModels.InstitutionVM
+
+<div class="container-fluid">
+    <div class="row g-3">
+
+        <div class="col-md-6">
+            <div class="text-muted small">Name</div>
+            <div class="fw-semibold">@Model.Name</div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="text-muted small">Email</div>
+            <div class="fw-semibold">@Model.Email</div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="text-muted small">Address</div>
+            <div class="fw-semibold">@Model.Address</div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="text-muted small">Contact</div>
+            <div class="fw-semibold">@Model.ContactNo</div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="text-muted small">Phone</div>
+            <div class="fw-semibold">@Model.PhoneNo</div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="text-muted small">Description</div>
+            <div class="fw-semibold">@Model.Description</div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="text-muted small">Status</div>
+            <span class="badge @(Model.IsActive ? "bg-success" : "bg-secondary")">
+                @(Model.IsActive ? "Active" : "Inactive")
+            </span>
+        </div>
+
+    </div>
+</div>
