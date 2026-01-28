@@ -1,4 +1,5 @@
-﻿using InstitutionPanel.Data;
+﻿using InstitutionPanel.Core.Interfaces;
+using InstitutionPanel.Data;
 using InstitutionPanel.Models.Entities;
 using InstitutionPanel.Services.Implementations;
 using InstitutionPanel.Services.Interfaces;
@@ -61,6 +62,8 @@ namespace InstitutionPanel.Configuration
             services.AddHttpContextAccessor();
 
             //inject services here
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
+
             services.AddScoped<IInstitutionService, InstitutionService>();
 
 

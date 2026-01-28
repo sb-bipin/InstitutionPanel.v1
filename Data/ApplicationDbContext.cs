@@ -1,8 +1,10 @@
-﻿using InstitutionPanel.Models.Common;
+﻿using InstitutionPanel.Core.Interfaces;
+using InstitutionPanel.Models.Common;
 using InstitutionPanel.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 using System.Security.Claims;
 
 namespace InstitutionPanel.Data
@@ -11,11 +13,14 @@ namespace InstitutionPanel.Data
         : IdentityDbContext<ApplicationUser, IdentityRole, string>
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IHttpContextAccessor httpContextAccessor)
+        private readonly ICurrentUserService _currentUser;
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options,
+                                    IHttpContextAccessor httpContextAccessor,
+                                    ICurrentUserService currentUserService)
             : base(options)
         {
             _httpContextAccessor = httpContextAccessor;
+            _currentUser = currentUserService;
         }
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -56,6 +61,22 @@ namespace InstitutionPanel.Data
                       .IsRequired(false);
                 });
             });
+
+            builder.Entity<Institution>()
+                        .HasQueryFilter(i => _currentUser.UserType == "SuperAdmin" ||
+                                        (
+                                            _currentUser.InstitutionId != null
+                                            && i.Id.ToString() == _currentUser.InstitutionId
+                                        ));
+
+            builder.Entity<ApplicationUser>()
+                        .HasQueryFilter(i => _currentUser.UserType == "SuperAdmin" ||
+                                        (
+                                            _currentUser.InstitutionId != null
+                                            && i.Id.ToString() == _currentUser.InstitutionId
+                                        ));
+
+
         }
 
         public DbSet<Institution> Institutions { get; set; }
