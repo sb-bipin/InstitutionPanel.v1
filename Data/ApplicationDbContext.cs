@@ -69,12 +69,12 @@ namespace InstitutionPanel.Data
                                             && i.Id.ToString() == _currentUser.InstitutionId
                                         ));
 
-            builder.Entity<ApplicationUser>()
-                        .HasQueryFilter(i => _currentUser.UserType == "SuperAdmin" ||
-                                        (
-                                            _currentUser.InstitutionId != null
-                                            && i.Id.ToString() == _currentUser.InstitutionId
-                                        ));
+            //builder.Entity<ApplicationUser>()
+            //            .HasQueryFilter(i => _currentUser.UserType == "SuperAdmin" ||
+            //                            (
+            //                                _currentUser.InstitutionId != null
+            //                                && i.Id.ToString() == _currentUser.InstitutionId
+            //                            ));
 
 
         }
