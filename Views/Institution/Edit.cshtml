@@ -1,0 +1,116 @@
+﻿@model InstitutionPanel.Models.DTOs.Institution.UpdateInstitutionCommand
+
+@{
+    ViewData["Title"] = "Edit Institution";
+}
+
+<style>
+    body{
+        margin:0;
+        padding:0;
+    }
+</style>
+
+<body>
+<div class="container py-1">
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+
+            <div class="card shadow-sm rounded-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-pencil-square me-2"></i>
+                        Edit Institution
+                    </h4>
+                </div>
+
+                <div class="card-body">
+                    <form asp-action="Edit" method="post" class="needs-validation" novalidate>
+                        <input asp-for="Id" type="hidden" />
+
+                        <div class="row g-3">
+
+                            <div class="col-md-6">
+                                <label asp-for="Name" class="form-label fw-semibold"></label>
+                                <input asp-for="Name" class="form-control" required />
+                                <div class="invalid-feedback">
+                                    Please enter institution name.
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="Email" class="form-label fw-semibold"></label>
+                                <input asp-for="Email" type="email" class="form-control" required />
+                                <div class="invalid-feedback">
+                                    Please enter a valid email.
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="ContactNo" class="form-label fw-semibold"></label>
+                                <input asp-for="ContactNo" class="form-control" />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label asp-for="PhoneNo" class="form-label fw-semibold"></label>
+                                <input asp-for="PhoneNo" class="form-control" />
+                            </div>
+
+                            <div class="col-12">
+                                <label asp-for="Address" class="form-label fw-semibold"></label>
+                                <textarea asp-for="Address" class="form-control" rows="2"></textarea>
+                            </div>
+
+                            <div class="col-12">
+                                <label asp-for="Description" class="form-label fw-semibold"></label>
+                                <textarea asp-for="Description" class="form-control" rows="2"></textarea>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-check form-switch">
+                                    <input asp-for="IsActive" class="form-check-input" role="switch" />
+                                    <label asp-for="IsActive" class="form-check-label fw-semibold"></label>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="mt-4 d-flex justify-content-end gap-2">
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left-circle me-1"></i> Back
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save me-1"></i> Update
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+</body>
+
+
+@section Scripts {
+    <script>
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms).forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
+    </script>
+}
