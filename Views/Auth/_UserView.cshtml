@@ -1,0 +1,34 @@
+﻿@model InstitutionPanel.Models.ViewModels.ApplicationUserVM
+
+<div class="text-center mb-4">
+    <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center mb-2"
+         style="width:70px;height:70px;font-size:1.8rem;">
+        <i class="bi bi-person"></i>
+    </div>
+
+    <h5 class="fw-bold mb-0">@Model.FirstName @Model.LastName</h5>
+    <small class="text-muted">@Model.Email</small>
+</div>
+
+<dl class="row">
+    <dt class="col-5 text-muted">Username</dt>
+    <dd class="col-7">@Model.UserName</dd>
+
+    <dt class="col-5 text-muted">User Type</dt>
+    <dd class="col-7">
+        <span class="badge bg-info">@Model.UserType</span>
+    </dd>
+
+    <dt class="col-5 text-muted">Status</dt>
+    <dd class="col-7">
+        <span class="badge @(Model.IsActive ? "bg-success" : "bg-secondary")">
+            @(Model.IsActive ? "Active" : "Inactive")
+        </span>
+    </dd>
+
+    <dt class="col-5 text-muted">Created At</dt>
+    <dd class="col-7">@Model.CreatedAt</dd>
+
+    <dt class="col-5 text-muted">Created By</dt>
+    <dd class="col-7">@Model.CreatedBy</dd>
+</dl>
