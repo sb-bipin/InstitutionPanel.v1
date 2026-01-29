@@ -1,8 +1,12 @@
-﻿using InstitutionPanel.Models.DTOs.Auth;
+﻿using InstitutionPanel.Core.Interfaces;
+using InstitutionPanel.Models.Common;
+using InstitutionPanel.Models.DTOs.Auth;
 using InstitutionPanel.Models.Entities;
+using InstitutionPanel.Models.ViewModels;
 using InstitutionPanel.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace InstitutionPanel.Services.Implementations
 {
@@ -11,15 +15,18 @@ namespace InstitutionPanel.Services.Implementations
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ITokenService _tokenService;
+        private readonly ICurrentUserService _currentUser;
 
         public AuthService(
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
-            ITokenService tokenService)
+            ITokenService tokenService,
+            ICurrentUserService currentUser)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _tokenService = tokenService;
+            _currentUser = currentUser;
         }
 
         public async Task<(bool Success, string Message, string? Token)> RegisterAsync(RegisterDto model)
@@ -115,5 +122,77 @@ namespace InstitutionPanel.Services.Implementations
                 ? (true, "Password changed successfully")
                 : (false, "Failed to change password");
         }
+
+        public async Task<ApiResponse<List<ApplicationUserVM>>> GetAllUsersAsync()
+        {
+            var usersQuery = _userManager.Users.AsQueryable();
+
+            if (!string.IsNullOrEmpty(_currentUser.InstitutionId))
+            {
+                usersQuery = usersQuery.Where(u => u.InstitutionId.ToString() == _currentUser.InstitutionId);
+            }
+
+            var users = await usersQuery
+                            .Select(user => new ApplicationUserVM
+                            {
+                                Id = Guid.Parse(user.Id),
+                                UserName = user.UserName,
+                                Email = user.Email,
+                                FirstName = user.FirstName,
+                                LastName = user.LastName,
+                                InstitutionId = user.InstitutionId,
+                                IsActive = user.IsActive,
+                                UserType = user.UserType,
+                                CreatedAt = user.CreatedAt.ToString("yyyy-MM-dd"),
+                                CreatedBy = user.CreatedBy,
+                                UpdatedAt = user.UpdatedAt.HasValue ? user.UpdatedAt.Value.ToString("yyyy-MM-dd") : null,
+                                UpdatedBy = user.UpdatedBy
+                            })
+                            .ToListAsync();
+
+            return ApiResponse<List<ApplicationUserVM>>.SuccessResponse(users);
+
+        }
+
+        public async Task<ApplicationUserVM> GetUserDetailsByIdAsync(Guid id)
+        {
+            return await _userManager.Users.AsNoTracking()
+                                .Where(u => u.Id == id.ToString())
+                                .Select(user => new ApplicationUserVM
+                                {
+                                    Id = Guid.Parse(user.Id),
+                                    UserName = user.UserName,
+                                    Email = user.Email,
+                                    FirstName = user.FirstName,
+                                    LastName = user.LastName,
+                                    InstitutionId = user.InstitutionId,
+                                    IsActive = user.IsActive,
+                                    UserType = user.UserType,
+                                    CreatedAt = user.CreatedAt.ToString("yyyy-MM-dd"),
+                                    CreatedBy = user.CreatedBy,
+                                    //UpdatedAt = user.UpdatedAt.HasValue ? user.UpdatedAt.Value.ToString("yyyy-MM-dd") : null,
+                                    //UpdatedBy = user.UpdatedBy
+                                })
+                                .SingleOrDefaultAsync();
+
+
+        }
+        public async Task<ApiResponse<bool>> UpdateUserAsync(UserDTO model)
+        {
+            var user = await _userManager.FindByIdAsync(model.Id.ToString());
+
+            if (user is null)
+                return ApiResponse<bool>.FailureResponse("User not found");
+
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.IsActive = model.IsActive;
+            //user.UserType = model.UserType;
+
+            var result = await _userManager.UpdateAsync(user);
+
+            return ApiResponse<bool>.SuccessResponse(true, "User updated successfully");
+        }
+
     }
 }

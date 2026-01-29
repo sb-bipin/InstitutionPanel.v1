@@ -1,4 +1,7 @@
-﻿using InstitutionPanel.Models.DTOs.Auth;
+﻿using InstitutionPanel.Models.Common;
+using InstitutionPanel.Models.DTOs.Auth;
+using InstitutionPanel.Models.Entities;
+using InstitutionPanel.Models.ViewModels;
 
 namespace InstitutionPanel.Services.Interfaces
 {
@@ -10,5 +13,9 @@ namespace InstitutionPanel.Services.Interfaces
         Task<(bool Success, string Message)> ChangePasswordAsync(string userId,
                                                                 string currentPassword,
                                                                 string newPassword);
+        Task<ApiResponse<List<ApplicationUserVM>>> GetAllUsersAsync();
+        Task<ApplicationUserVM> GetUserDetailsByIdAsync(Guid id);
+        Task<ApiResponse<bool>> UpdateUserAsync(UserDTO model);
+
     }
 }
