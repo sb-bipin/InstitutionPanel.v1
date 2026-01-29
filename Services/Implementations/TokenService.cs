@@ -30,6 +30,7 @@ namespace InstitutionPanel.Services.Implementations
                 new Claim(ClaimTypes.Email, user.Email ?? string.Empty),
                 new Claim(ClaimTypes.Name, user.UserName ?? string.Empty),
                 new Claim("UserType", user.UserType.ToString()),
+                new Claim("InstitutionId", user.InstitutionId.ToString()??""),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
