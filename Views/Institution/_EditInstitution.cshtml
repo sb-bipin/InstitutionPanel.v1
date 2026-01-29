@@ -1,0 +1,83 @@
+﻿@model InstitutionPanel.Models.DTOs.Institution.UpdateInstitutionCommand;
+@inject InstitutionPanel.Core.Interfaces.ICurrentUserService CurrentUser
+
+<div class="modal fade" id="editInstitutionModal" tabindex="-1" aria-labelledby="editInstitutionModalLabel">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content rounded-4 shadow">
+
+            <!-- Modal Header -->
+            <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold" id="editInstitutionModalLabel">
+                    <i class="bi bi-pencil-square me-2 text-primary"></i> Edit Institution
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="modal-body">
+                <form asp-action="Edit" method="post" id="editInstitutionForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Name" class="form-label fw-semibold">Name <span class="text-danger">*</span></label>
+                        <input asp-for="Name" class="form-control" placeholder="Enter institution name" />
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+                        <div class="col-md-6 mb-3">
+                        <label asp-for="Email" class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
+                        <input asp-for="Email" class="form-control" type="email" placeholder="Enter email address" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ContactNo" class="form-label fw-semibold">Contact Number</label>
+                            <input asp-for="ContactNo" class="form-control" placeholder="Enter contact number" />
+                            <span asp-validation-for="ContactNo" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PhoneNo" class="form-label fw-semibold">Phone Number</label>
+                            <input asp-for="PhoneNo" class="form-control" placeholder="Enter phone number" />
+                            <span asp-validation-for="PhoneNo" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label fw-semibold">Description</label>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Enter description"></textarea>
+                        <span asp-validation-for="Description" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Address" class="form-label fw-semibold">Address</label>
+                        <textarea asp-for="Address" class="form-control" rows="2" placeholder="Enter address"></textarea>
+                        <span asp-validation-for="Address" class="text-danger small"></span>
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+                        <input asp-for="IsActive" class="form-check-input" role="switch"
+                               disabled="@(CurrentUser.UserType != "SuperAdmin")" />
+                        <label asp-for="IsActive" class="form-check-label fw-semibold">Active Status</label>
+                    </div>
+
+
+                </form>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-1"></i> Cancel
+                </button>
+                <button type="submit" class="btn btn-primary" form="editInstitutionForm">
+                    <i class="bi bi-check-circle me-1"></i> Save Changes
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<partial name="_ValidationScriptsPartial" />

@@ -10,7 +10,7 @@ namespace InstitutionPanel.Services.Interfaces
         Task<ApiResponse<InstitutionVM>> CreateInstitutionAsync(AddInstitutionCommand command);
         Task<ApiResponse<bool>> UpdateInstitutionAsync(UpdateInstitutionCommand command);
         Task<ApiResponse<bool>> DeleteInstitutionAsync(Guid id);
-        Task<ApiResponse<InstitutionVM>> GetInstitutionByIdAsync(Guid id);
+        Task<InstitutionVM> GetInstitutionByIdAsync(Guid id);
         Task<ApiResponse<List<InstitutionVM>>> GetAllInstitutionAsync();
     }
 

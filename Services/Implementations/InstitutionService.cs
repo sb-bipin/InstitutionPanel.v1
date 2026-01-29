@@ -15,9 +15,12 @@ namespace InstitutionPanel.Services.Implementations
     public class InstitutionService : IInstitutionService
     {
         private readonly ApplicationDbContext _context;
-        public InstitutionService(ApplicationDbContext context)
+        private readonly ICurrentUserService _currentUserService;
+        public InstitutionService(ApplicationDbContext context,
+                                  ICurrentUserService currentUserService)
         {
             _context = context;
+            _currentUserService = currentUserService;
         }
 
         public async Task<ApiResponse<InstitutionVM>> CreateInstitutionAsync(AddInstitutionCommand command)
@@ -69,20 +72,13 @@ namespace InstitutionPanel.Services.Implementations
             return ApiResponse<List<InstitutionVM>>.SuccessResponse(institutions);
         }
 
-        public async Task<ApiResponse<InstitutionVM>> GetInstitutionByIdAsync(Guid id)
+        public async Task<InstitutionVM> GetInstitutionByIdAsync(Guid id)
         {
             var institution = await _context.Institutions
                 .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .SingleOrDefaultAsync(x => x.Id == id);
 
-            if (institution == null)
-            {
-                return ApiResponse<InstitutionVM>.FailureResponse(
-                    "Institution not found"
-                );
-            }
-
-            return ApiResponse<InstitutionVM>.SuccessResponse(MapToVM(institution));
+            return MapToVM(institution);
         }
 
         public async Task<ApiResponse<bool>> UpdateInstitutionAsync(UpdateInstitutionCommand command)
@@ -101,7 +97,9 @@ namespace InstitutionPanel.Services.Implementations
             institution.Address = command.Address;
             institution.ContactNo = ContactNumber.From(command.ContactNo);
             institution.PhoneNo = PhoneNumber.From(command.PhoneNo);
-            institution.IsActive = command.IsActive;
+
+            if(_currentUserService.UserType == "SuperAdmin")
+                institution.IsActive = command.IsActive;
 
             await _context.SaveChangesAsync();
 

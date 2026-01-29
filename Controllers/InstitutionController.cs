@@ -56,25 +56,25 @@ namespace InstitutionPanel.Controllers
         {
             var response = await _institutionService.GetInstitutionByIdAsync(id);
 
-            if (!response.Success || response.Data == null)
+            if (response is null)
             {
-                TempData["ErrorMessage"] = response.Message;
+                TempData["ErrorMessage"] = "Institution is not found.";
                 return RedirectToAction(nameof(Index));
             }
 
             var command = new UpdateInstitutionCommand
             {
-                Id = response.Data.Id,
-                Name = response.Data.Name,
-                Email = response.Data.Email,
-                Description = response.Data.Description,
-                Address = response.Data.Address,
-                ContactNo = response.Data.ContactNo,
-                PhoneNo = response.Data.PhoneNo,
-                IsActive = response.Data.IsActive
+                Id = response.Id,
+                Name = response.Name,
+                Email = response.Email,
+                Description = response.Description,
+                Address = response.Address,
+                ContactNo = response.ContactNo,
+                PhoneNo = response.PhoneNo,
+                IsActive = response.IsActive
             };
 
-            return View(command);
+            return PartialView("_EditInstitution",command);
         }
 
         [HttpPost]
@@ -82,42 +82,28 @@ namespace InstitutionPanel.Controllers
         public async Task<IActionResult> Edit(UpdateInstitutionCommand command)
         {
             if (!ModelState.IsValid)
-                return View(command);
+                return PartialView("_EditInstitution", command);
 
             var response = await _institutionService.UpdateInstitutionAsync(command);
 
             if (!response.Success)
             {
                 ModelState.AddModelError(string.Empty, response.Message);
-                return View(command);
+                return PartialView("_EditInstitution", command);
             }
 
-            TempData["SuccessMessage"] = response.Message;
-            return RedirectToAction(nameof(Index));
+            return Json(new { success = true, message = response.Message });
         }
 
         public async Task<IActionResult> Details(Guid id)
         {
             var response = await _institutionService.GetInstitutionByIdAsync(id);
 
-            if (!response.Success || response.Data == null)
-                return BadRequest(response.Message);
+            if (response is null)
+                return BadRequest(response);
 
-            return PartialView("_InstitutionDetails", response.Data);
+            return PartialView("_InstitutionDetails", response);
         }
-
-        //public async Task<IActionResult> Details(Guid id)
-        //{
-        //    var response = await _institutionService.GetInstitutionByIdAsync(id);
-
-        //    if (!response.Success || response.Data == null)
-        //    {
-        //        TempData["ErrorMessage"] = response.Message;
-        //        return RedirectToAction(nameof(Index));
-        //    }
-
-        //    return View(response.Data);
-        //}
 
         [CustomAuthorize(AllowedUserTypes = "SuperAdmin")]
         [HttpPost]
