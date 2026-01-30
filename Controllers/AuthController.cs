@@ -6,6 +6,7 @@ using InstitutionPanel.Services.Implementations;
 using InstitutionPanel.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace InstitutionPanel.Controllers
 {
@@ -13,15 +14,37 @@ namespace InstitutionPanel.Controllers
     public class AuthController : Controller
     {
         private readonly IAuthService _authService;
+        private readonly IInstitutionService _institutionService;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService,
+                              IInstitutionService institutionService)
         {
             _authService = authService;
+            _institutionService = institutionService;
         }
 
         #region Register User Section
         [HttpGet]
-        public IActionResult Register() => View();
+        public async Task<IActionResult> Register()
+        {
+            var model = new RegisterDto();
+
+            var institutions = await _institutionService.GetAllInstitutionAsync();
+
+            if(institutions.Data == null || !institutions.Data.Any())
+            {
+                model.Institutions = new List<SelectListItem>();
+            }
+
+            model.Institutions = institutions.Data.Select(i => new SelectListItem
+                                    {
+                                        Value = i.Id.ToString(),
+                                        Text = i.Name
+                                    })
+                                    .ToList();
+
+            return View(model);
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -37,8 +60,8 @@ namespace InstitutionPanel.Controllers
                 return View(model);
             }
 
-            TempData["SuccessMessage"] = "Registration successful! Please login.";
-            return RedirectToAction("Login");
+            TempData["SuccessMessage"] = $"User {model.FirstName} added successfully.";
+            return RedirectToAction("UserList");
         }
         #endregion
 
@@ -131,6 +154,19 @@ namespace InstitutionPanel.Controllers
 
             if (user == null)
                 return NotFound();
+
+            var institutions = await _institutionService.GetAllInstitutionAsync();
+
+            if (institutions.Data == null || !institutions.Data.Any())
+            {
+                user.Institutions = new List<SelectListItem>();
+            }
+
+            user.Institutions = institutions.Data.Select(i => new SelectListItem
+            {
+                Value = i.Id.ToString(),
+                Text = i.Name
+            }).ToList();
 
             return PartialView("_EditUser", user);
         }
