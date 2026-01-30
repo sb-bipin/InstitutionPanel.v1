@@ -1,47 +1,788 @@
 ﻿@model InstitutionPanel.Models.DTOs.Auth.RegisterDto
+@inject InstitutionPanel.Core.Interfaces.ICurrentUserService CurrentUser
+
 @{
     ViewData["Title"] = "Register";
 }
 
-<h2>Register</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2D3E50;
+            --primary-light: #4A5F7F;
+            --accent: #E8B86D;
+            --accent-light: #F4D9A3;
+            --success: #4CAF50;
+            --danger: #ef4444;
+            --text-dark: #1a1a1a;
+            --text-light: #6B7280;
+            --bg-main: #F8F9FA;
+            --bg-card: #FFFFFF;
+            --border: #E5E7EB;
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
 
-<form asp-action="Register" method="post" class="col-md-6">
-    @Html.AntiForgeryToken()
-    <div asp-validation-summary="All" class="text-danger"></div>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <div class="mb-3">
-        <label asp-for="FirstName"></label>
-        <input asp-for="FirstName" class="form-control" />
-        <span asp-validation-for="FirstName" class="text-danger"></span>
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9ecf1 100%);
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @@keyframes fadeInUp {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeIn 0.8s ease-out 0.2s both;
+        }
+
+        @@keyframes fadeIn {
+            from
+
+        {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+
+        }
+
+        .brand-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            box-shadow: var(--shadow-md);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @@keyframes pulse {
+            0%, 100%
+
+        {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
+
+        }
+
+        .brand-icon svg {
+            width: 40px;
+            height: 40px;
+            color: white;
+        }
+
+        .header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 2.5rem);
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .header-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            font-weight: 400;
+        }
+
+        .form-card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: clamp(2rem, 5vw, 3rem);
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+            animation: scaleIn 0.6s ease-out 0.3s both;
+        }
+
+        @@keyframes scaleIn {
+            from
+
+        {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        }
+
+        .form-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--primary) 100%);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.75rem;
+        }
+
+        @@media (min-width: 768px) {
+            .form-grid
+
+        {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        }
+
+        .form-group {
+            position: relative;
+            animation: slideIn 0.5s ease-out both;
+        }
+
+            .form-group:nth-child(1) {
+                animation-delay: 0.4s;
+            }
+
+            .form-group:nth-child(2) {
+                animation-delay: 0.45s;
+            }
+
+            .form-group:nth-child(3) {
+                animation-delay: 0.5s;
+            }
+
+            .form-group:nth-child(4) {
+                animation-delay: 0.55s;
+            }
+
+            .form-group:nth-child(5) {
+                animation-delay: 0.6s;
+            }
+
+        @@keyframes slideIn {
+            from
+
+        {
+            opacity: 0;
+            transform: translateX(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.875rem 1.125rem;
+            font-size: 1rem;
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text-dark);
+            background: var(--bg-main);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+        }
+
+            .form-control:focus {
+                background: var(--bg-card);
+                border-color: var(--accent);
+                box-shadow: 0 0 0 4px rgba(232, 184, 109, 0.1);
+                transform: translateY(-1px);
+            }
+
+            .form-control:hover:not(:focus) {
+                border-color: var(--border);
+            }
+
+            .form-control.is-invalid {
+                border-color: var(--danger);
+            }
+
+        .password-strength {
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        .password-strength-bar {
+            height: 100%;
+            width: 0;
+            transition: all 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .password-strength-text {
+            font-size: 0.75rem;
+            margin-top: 0.375rem;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .text-danger {
+            color: var(--danger);
+            font-size: 0.8125rem;
+            margin-top: 0.375rem;
+            display: block;
+            font-weight: 500;
+        }
+
+        .alert-danger {
+            background-color: #fef2f2;
+            border: 2px solid #fecaca;
+            border-radius: 12px;
+            color: var(--danger);
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @@keyframes shake {
+            0%, 100%
+
+        {
+            transform: translateX(0);
+        }
+
+        25% {
+            transform: translateX(-10px);
+        }
+
+        75% {
+            transform: translateX(10px);
+        }
+
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2.5rem;
+            flex-wrap: wrap;
+            animation: slideUp 0.6s ease-out 0.65s both;
+        }
+
+        @@keyframes slideUp {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: 'DM Sans', sans-serif;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .btn::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 0;
+                height: 0;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.3);
+                transform: translate(-50%, -50%);
+                transition: width 0.6s, height 0.6s;
+            }
+
+            .btn:hover::before {
+                width: 300px;
+                height: 300px;
+            }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            color: white;
+            box-shadow: var(--shadow-md);
+            width: 100%;
+        }
+
+            .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: var(--shadow-lg);
+            }
+
+            .btn-primary:active {
+                transform: translateY(0);
+            }
+
+            .btn-primary:disabled {
+                opacity: 0.7;
+                cursor: not-allowed;
+            }
+
+        .login-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid var(--border);
+            animation: fadeIn 0.6s ease-out 0.7s both;
+        }
+
+        .login-link-text {
+            color: var(--text-light);
+            font-size: 0.9375rem;
+        }
+
+        .login-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+            .login-link a::after {
+                content: '';
+                position: absolute;
+                width: 0;
+                height: 2px;
+                bottom: -2px;
+                left: 0;
+                background-color: var(--accent);
+                transition: width 0.3s ease;
+            }
+
+            .login-link a:hover {
+                color: var(--accent);
+            }
+
+                .login-link a:hover::after {
+                    width: 100%;
+                }
+
+        @@media (max-width: 767px) {
+            body
+
+        {
+            padding: 1rem;
+        }
+
+        .form-card {
+            padding: 1.5rem;
+            border-radius: 16px;
+        }
+
+        .header {
+            margin-bottom: 2rem;
+        }
+
+        .brand-icon {
+            width: 64px;
+            height: 64px;
+        }
+
+            .brand-icon svg {
+                width: 32px;
+                height: 32px;
+            }
+
+        .form-grid {
+            gap: 1.25rem;
+        }
+
+        .button-group {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+
+        }
+
+        @@media (max-width: 480px) {
+            .header h2
+
+        {
+            font-size: 1.75rem;
+        }
+
+        .header-subtitle {
+            font-size: 0.95rem;
+        }
+
+        }
+
+        .form-control:focus-visible {
+            outline: 3px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        @@media print {
+            body
+
+        {
+            background: white;
+        }
+
+        .form-card {
+            box-shadow: none;
+        }
+
+        }
+
+        form-select {
+            width: 100%;
+            padding: 0.875rem 1.125rem;
+            font-size: 1rem;
+            font-family: 'DM Sans', sans-serif;
+            color: var(--text-dark);
+            background: var(--bg-main);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236B7280' d='M10.293 3.293L6 7.586 1.707 3.293A1 1 0 00.293 4.707l5 5a1 1 0 001.414 0l5-5a1 1 0 10-1.414-1.414z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            padding-right: 3rem;
+        }
+
+        .form-select:focus {
+            background-color: var(--bg-card);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(232, 184, 109, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-select:hover:not(:focus) {
+            border-color: var(--border);
+        }
+
+        .admin-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--primary) 100%);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            margin-left: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Create Account</h2>
+            <p class="header-subtitle">Join us and get started today</p>
+        </div>
+
+        <div class="form-card">
+            <form asp-action="Register" method="post" novalidate id="registerForm">
+                @Html.AntiForgeryToken()
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label asp-for="FirstName">First Name</label>
+                        <input asp-for="FirstName" class="form-control" placeholder="John" />
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="LastName">Last Name</label>
+                        <input asp-for="LastName" class="form-control" placeholder="Doe" />
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label asp-for="Email">Email Address</label>
+                        <input asp-for="Email" class="form-control" type="email" placeholder="you@example.com" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label asp-for="Password">Password</label>
+                        <input asp-for="Password" class="form-control" type="password" placeholder="••••••••" id="passwordInput" />
+                        <div class="password-strength">
+                            <div class="password-strength-bar" id="strengthBar"></div>
+                        </div>
+                        <span class="password-strength-text" id="strengthText"></span>
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label asp-for="ConfirmPassword">Confirm Password</label>
+                        <input asp-for="ConfirmPassword" class="form-control" type="password" placeholder="••••••••" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+
+                    @if (CurrentUser.IsAuthenticated && CurrentUser.UserType == "SuperAdmin")
+                    {
+                        <div class="form-group full-width admin-only-field">
+                            <label asp-for="UserType">User Type</label>
+                            <select id="UserType" asp-for="UserType" class="form-select" asp-items="Html.GetEnumSelectList<UserType>()">
+                                <option value="">-- Select User Type --</option>
+                            </select>
+                            <span asp-validation-for="UserType" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group full-width institution-field" id="institutionField" style="display: none;">
+                            <label>Institution</label>
+                            <select class="form-select" id="institutionSelect" name="InstitutionId">
+                                <option value="">-- Select Institution --</option>
+                                @foreach (var institution in Model.Institutions)
+                                {
+                                    <option value="@institution.Value">@institution.Text</option>
+                                }
+                            </select>
+                            <span asp-validation-for="InstitutionId" class="text-danger"></span>
+                        </div>
+                    }
+
+
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">
+                        <span>Create Account</span>
+                    </button>
+                </div>
+
+                <div class="login-link">
+                    <span class="login-link-text">Already have an account?</span>
+                    <a asp-action="Login">Sign in here</a>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <div class="mb-3">
-        <label asp-for="LastName"></label>
-        <input asp-for="LastName" class="form-control" />
-        <span asp-validation-for="LastName" class="text-danger"></span>
-    </div>
+    <script>
+        document.querySelectorAll('.form-control').forEach(input => {
+            input.addEventListener('focus', function() {
+                const label = this.parentElement.querySelector('label');
+                if (label) {
+                    label.style.color = 'var(--accent)';
+                }
+            });
 
-    <div class="mb-3">
-        <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
+            input.addEventListener('blur', function() {
+                const label = this.parentElement.querySelector('label');
+                if (label) {
+                    label.style.color = 'var(--text-dark)';
+                }
+            });
+        });
 
-    <div class="mb-3">
-        <label asp-for="Password"></label>
-        <input asp-for="Password" class="form-control" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (this.classList.contains('btn-primary')) {
+                    const ripple = document.createElement('span');
+                    ripple.style.cssText = `
+                        position: absolute;
+                        width: 20px;
+                        height: 20px;
+                        background: rgba(255, 255, 255, 0.6);
+                        border-radius: 50%;
+                        pointer-events: none;
+                        animation: ripple 0.6s ease-out;
+                    `;
+                    ripple.style.left = e.offsetX + 'px';
+                    ripple.style.top = e.offsetY + 'px';
+                    this.appendChild(ripple);
 
-    <div class="mb-3">
-        <label asp-for="ConfirmPassword"></label>
-        <input asp-for="ConfirmPassword" class="form-control" />
-        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-    </div>
+                    setTimeout(() => ripple.remove(), 600);
+                }
+            });
+        });
 
-    <button type="submit" class="btn btn-primary">Register</button>
-    <a asp-action="Login" class="btn btn-link">Already have an account?</a>
-</form>
+        const style = document.createElement('style');
+        style.textContent = `
+            @@keyframes ripple {
+                to {
+                    width: 200px;
+                    height: 200px;
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        const passwordInput = document.getElementById('passwordInput');
+        const strengthBar = document.getElementById('strengthBar');
+        const strengthText = document.getElementById('strengthText');
+
+        if (passwordInput && strengthBar && strengthText) {
+            passwordInput.addEventListener('input', function() {
+                const password = this.value;
+                let strength = 0;
+                let strengthLabel = '';
+
+                if (password.length === 0) {
+                    strengthBar.style.width = '0%';
+                    strengthText.textContent = '';
+                    return;
+                }
+
+                if (password.length >= 8) strength += 25;
+                if (password.match(/[a-z]+/)) strength += 25;
+                if (password.match(/[A-Z]+/)) strength += 25;
+                if (password.match(/[0-9]+/)) strength += 25;
+
+                strengthBar.style.width = strength + '%';
+
+                if (strength <= 25) {
+                    strengthBar.style.backgroundColor = '#ef4444';
+                    strengthLabel = 'Weak password';
+                } else if (strength <= 50) {
+                    strengthBar.style.backgroundColor = '#f59e0b';
+                    strengthLabel = 'Fair password';
+                } else if (strength <= 75) {
+                    strengthBar.style.backgroundColor = '#eab308';
+                    strengthLabel = 'Good password';
+                } else {
+                    strengthBar.style.backgroundColor = '#4CAF50';
+                    strengthLabel = 'Strong password';
+                }
+
+                strengthText.textContent = strengthLabel;
+                strengthText.style.color = strengthBar.style.backgroundColor;
+            });
+        }
+
+        const form = document.getElementById('registerForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const inputs = form.querySelectorAll('.form-control');
+                inputs.forEach(input => {
+                    if (!input.value.trim() && input.hasAttribute('required')) {
+                        input.classList.add('is-invalid');
+                    } else {
+                        input.classList.remove('is-invalid');
+                    }
+                });
+            });
+
+            const inputs = form.querySelectorAll('.form-control');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    this.classList.remove('is-invalid');
+                });
+            });
+        }
+
+        const userTypeSelect = document.getElementById('UserType');
+        const institutionField = document.getElementById('institutionField');
+        const institutionSelect = document.getElementById('institutionSelect');
+
+        function toggleInstitution() {
+
+            if (userTypeSelect.value === '2') { 
+                institutionField.style.display = 'block';
+            } else {
+                institutionField.style.display = 'none';
+                institutionSelect.value = '';
+            }
+        }
+
+        userTypeSelect?.addEventListener('change', toggleInstitution);
+
+        toggleInstitution();
+
+
+
+    </script>
+</body>
+</html>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

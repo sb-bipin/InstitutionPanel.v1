@@ -1,4 +1,5 @@
 ﻿@model InstitutionPanel.Models.ViewModels.ApplicationUserVM
+@inject InstitutionPanel.Core.Interfaces.ICurrentUserService CurrentUser
 
 <form asp-action="EditUser" method="post" id="editUserForm">
     @Html.AntiForgeryToken()
@@ -23,10 +24,34 @@
         </div>
     </div>
 
-    <div class="mb-3">
-        <label class="form-label">User Type</label>
-        <input class="form-control" value="@Model.UserType" disabled />
-    </div>
+    @if (CurrentUser.IsAuthenticated && CurrentUser.UserType == "SuperAdmin")
+    {
+        <div class="form-group full-width admin-only-field">
+            <label asp-for="UserType">User Type</label>
+            <select id="UserType" asp-for="UserType" class="form-select" asp-items="Html.GetEnumSelectList<UserType>()">
+                <option value="">-- Select User Type --</option>
+            </select>
+            <span asp-validation-for="UserType" class="text-danger"></span>
+        </div>
+
+        <div class="form-group full-width institution-field" id="institutionField" style="display: none;">
+            <label>Institution</label>
+            <select class="form-select"
+                    id="institutionSelect"
+                    name="InstitutionId">
+                <option value="">-- Select Institution --</option>
+                @foreach (var institution in Model.Institutions)
+                {
+                    <option value="@institution.Value"
+                            selected="@(institution.Value == Model.InstitutionId?.ToString())">
+                        @institution.Text
+                    </option>
+                }
+            </select>
+
+            <span asp-validation-for="InstitutionId" class="text-danger"></span>
+        </div>
+    }
 
     <div class="form-check form-switch mb-4">
         <input asp-for="IsActive" class="form-check-input" />
@@ -44,3 +69,23 @@
 </form>
 
 <partial name="_ValidationScriptsPartial" />
+
+<script>
+    const userTypeSelect = document.getElementById('UserType');
+        const institutionField = document.getElementById('institutionField');
+        const institutionSelect = document.getElementById('institutionSelect');
+
+        function toggleInstitution() {
+
+            if (userTypeSelect.value === '2') {
+                institutionField.style.display = 'block';
+            } else {
+                institutionField.style.display = 'none';
+                institutionSelect.value = '';
+            }
+        }
+
+        userTypeSelect?.addEventListener('change', toggleInstitution);
+
+        toggleInstitution();
+</script>
