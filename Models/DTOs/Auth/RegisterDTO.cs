@@ -1,4 +1,5 @@
 ﻿using InstitutionPanel.Models.ValueObject;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 namespace InstitutionPanel.Models.DTOs.Auth
@@ -7,7 +8,7 @@ namespace InstitutionPanel.Models.DTOs.Auth
     {
         [Required]
         [EmailAddress]
-        public Email Email { get; set; }
+        public string Email { get; set; }
 
         [Required]
         [MinLength(8),MaxLength(30)]
@@ -25,7 +26,11 @@ namespace InstitutionPanel.Models.DTOs.Auth
         [Required]
         public string LastName { get; set; }
 
-        [Required]
         public Guid? InstitutionId { get; set; }
+
+        [Required]
+        public UserType UserType { get; set; }
+        public List<SelectListItem> Institutions { get; set; } = new();
+
     }
 }

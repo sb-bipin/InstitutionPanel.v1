@@ -1,4 +1,5 @@
 ﻿using InstitutionPanel.Models.ValueObject;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 namespace InstitutionPanel.Models.ViewModels
@@ -17,5 +18,8 @@ namespace InstitutionPanel.Models.ViewModels
         public string CreatedBy { get; set; }
         public string? UpdatedAt { get; set; }
         public string? UpdatedBy { get; set; }
+        public string InstitutionName { get; set; }
+        public List<SelectListItem> Institutions { get; set; } = new();
+
     }
 }
