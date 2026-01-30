@@ -2,6 +2,7 @@
 using InstitutionPanel.Models.Common;
 using InstitutionPanel.Models.DTOs.Auth;
 using InstitutionPanel.Models.Entities;
+using InstitutionPanel.Models.ValueObject;
 using InstitutionPanel.Models.ViewModels;
 using InstitutionPanel.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -38,14 +39,14 @@ namespace InstitutionPanel.Services.Implementations
             var user = new ApplicationUser
             {
                 UserName = model.Email,
-                Email = model.Email,
+                Email = Email.From(model.Email),
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow,
                 CreatedBy = "Self",
                 InstitutionId = model.InstitutionId,
-                UserType = UserType.InstitutionAdmin
+                UserType = _currentUser.UserType == "SuperAdmin" ? model.UserType : UserType.InstitutionAdmin
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -143,10 +144,11 @@ namespace InstitutionPanel.Services.Implementations
                                 InstitutionId = user.InstitutionId,
                                 IsActive = user.IsActive,
                                 UserType = user.UserType,
-                                CreatedAt = user.CreatedAt.ToString("yyyy-MM-dd"),
+                                CreatedAt = user.CreatedAt.ToString(),
                                 CreatedBy = user.CreatedBy,
-                                UpdatedAt = user.UpdatedAt.HasValue ? user.UpdatedAt.Value.ToString("yyyy-MM-dd") : null,
-                                UpdatedBy = user.UpdatedBy
+                                UpdatedAt = user.UpdatedAt.HasValue ? user.UpdatedAt.Value.ToString() : null,
+                                UpdatedBy = user.UpdatedBy,
+                                InstitutionName = user.Institution.Name
                             })
                             .ToListAsync();
 
@@ -170,8 +172,6 @@ namespace InstitutionPanel.Services.Implementations
                                     UserType = user.UserType,
                                     CreatedAt = user.CreatedAt.ToString("yyyy-MM-dd"),
                                     CreatedBy = user.CreatedBy,
-                                    //UpdatedAt = user.UpdatedAt.HasValue ? user.UpdatedAt.Value.ToString("yyyy-MM-dd") : null,
-                                    //UpdatedBy = user.UpdatedBy
                                 })
                                 .SingleOrDefaultAsync();
 
@@ -187,7 +187,8 @@ namespace InstitutionPanel.Services.Implementations
             user.FirstName = model.FirstName;
             user.LastName = model.LastName;
             user.IsActive = model.IsActive;
-            //user.UserType = model.UserType;
+            user.UserType = model.UserType;
+            user.InstitutionId = model.InstitutionId;
 
             var result = await _userManager.UpdateAsync(user);
 
