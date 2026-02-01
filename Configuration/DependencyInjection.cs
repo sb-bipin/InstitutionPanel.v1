@@ -1,4 +1,5 @@
 ﻿using InstitutionPanel.Core.Interfaces;
+using InstitutionPanel.Core.Services;
 using InstitutionPanel.Data;
 using InstitutionPanel.Models.Entities;
 using InstitutionPanel.Services.Implementations;
@@ -66,6 +67,7 @@ namespace InstitutionPanel.Configuration
 
             services.AddScoped<IInstitutionService, InstitutionService>();
 
+            services.AddScoped<IImageGalleryService, ImageGalleryService>();
 
             return services;
         }
