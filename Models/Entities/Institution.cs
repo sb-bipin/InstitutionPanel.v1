@@ -27,5 +27,8 @@ namespace InstitutionPanel.Models.Entities
         public PhoneNumber PhoneNo { get; set; }
 
         public bool IsActive { get; set; } = true;
+
+        public ICollection<ImageGallery> ImageGalleries { get; set; }
+
     }
 }
