@@ -208,3 +208,24 @@ IF @var5 IS NOT NULL EXEC(N'ALTER TABLE [Institutions] DROP CONSTRAINT [' + @var
 ALTER TABLE [Institutions] ALTER COLUMN [UpdatedAt] nvarchar(max) NULL;
 
 --End :Make Modified date and by flag of common entites as nullable --Bipin Poudel-- 2026 Jan 27
+
+--Start :Add image gallery entity --Bipin Poudel-- 2026 Feb 1
+
+
+CREATE TABLE [ImageGalleries] (
+    [Id] uniqueidentifier NOT NULL,
+    [Title] nvarchar(30) NOT NULL,
+    [ImageUrl] nvarchar(max) NOT NULL,
+    [Description] nvarchar(500) NOT NULL,
+    [InstitutionId] uniqueidentifier NOT NULL,
+    [CreatedAt] nvarchar(max) NOT NULL,
+    [CreatedBy] nvarchar(max) NOT NULL,
+    [UpdatedAt] nvarchar(max) NULL,
+    [UpdatedBy] nvarchar(max) NULL,
+    CONSTRAINT [PK_ImageGalleries] PRIMARY KEY ([Id]),
+    CONSTRAINT [FK_ImageGalleries_Institutions_InstitutionId] FOREIGN KEY ([InstitutionId]) REFERENCES [Institutions] ([Id]) ON DELETE CASCADE
+);
+
+CREATE INDEX [IX_ImageGalleries_InstitutionId] ON [ImageGalleries] ([InstitutionId]);
+
+--Start :Add image gallery entity --Bipin Poudel-- 2026 Feb 1

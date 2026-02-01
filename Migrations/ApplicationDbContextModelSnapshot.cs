@@ -119,6 +119,50 @@ namespace InstitutionPanel.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("InstitutionPanel.Models.Entities.ImageGallery", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CreatedAt")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("InstitutionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("UpdatedAt")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InstitutionId");
+
+                    b.ToTable("ImageGalleries");
+                });
+
             modelBuilder.Entity("InstitutionPanel.Models.Entities.Institution", b =>
                 {
                     b.Property<Guid>("Id")
@@ -304,6 +348,17 @@ namespace InstitutionPanel.Migrations
                     b.Navigation("Institution");
                 });
 
+            modelBuilder.Entity("InstitutionPanel.Models.Entities.ImageGallery", b =>
+                {
+                    b.HasOne("InstitutionPanel.Models.Entities.Institution", "Institution")
+                        .WithMany("ImageGalleries")
+                        .HasForeignKey("InstitutionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Institution");
+                });
+
             modelBuilder.Entity("InstitutionPanel.Models.Entities.Institution", b =>
                 {
                     b.OwnsOne("InstitutionPanel.Models.ValueObject.ContactNumber", "ContactNo", b1 =>
@@ -419,6 +474,11 @@ namespace InstitutionPanel.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("InstitutionPanel.Models.Entities.Institution", b =>
+                {
+                    b.Navigation("ImageGalleries");
                 });
 #pragma warning restore 612, 618
         }
