@@ -69,18 +69,25 @@ namespace InstitutionPanel.Data
                                             && i.Id.ToString() == _currentUser.InstitutionId
                                         ));
 
-            //builder.Entity<ApplicationUser>()
-            //            .HasQueryFilter(i => _currentUser.UserType == "SuperAdmin" ||
-            //                            (
-            //                                _currentUser.InstitutionId != null
-            //                                && i.Id.ToString() == _currentUser.InstitutionId
-            //                            ));
+            builder.Entity<Institution>()
+                        .HasMany(i => i.ImageGalleries)
+                        .WithOne(ig => ig.Institution)
+                        .HasForeignKey(ig => ig.InstitutionId)
+                        .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<ImageGallery>()
+                                .HasQueryFilter(i =>
+                                    _currentUser.UserType != "SuperAdmin"
+                                    && _currentUser.InstitutionId != null
+                                    && i.InstitutionId.ToString() == _currentUser.InstitutionId
+                                );
+
 
 
         }
 
         public DbSet<Institution> Institutions { get; set; }
-
+        public DbSet<ImageGallery> ImageGalleries{ get; set; }
 
         public override int SaveChanges()
         {
