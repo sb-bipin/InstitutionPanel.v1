@@ -1,0 +1,211 @@
+﻿@model IEnumerable<InstitutionPanel.Models.ViewModels.ImageGalleryVM>
+
+@{
+    ViewData["Title"] = "Image Gallery";
+}
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
+    <h4 class="mb-0">Image Gallery</h4>
+
+    <!-- ADD IMAGE BUTTON -->
+    <button type="button"
+            class="btn btn-primary btn-lg d-flex align-items-center gap-2 shadow-sm js-add-image"
+            data-url="@Url.Action("Create", "ImageGallery")">
+        <i class="bi bi-plus-circle"></i>
+        Add Image
+    </button>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show">
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- ================= DESKTOP TABLE ================= -->
+<div class="table-responsive d-none d-md-block">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Preview</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="4" class="text-center text-muted py-4">
+                        No images found.
+                    </td>
+                </tr>
+            }
+            else
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td style="width:120px">
+                            <img src="@item.ImageUrl"
+                                 class="img-thumbnail rounded"
+                                 style="height:70px;object-fit:cover;" />
+                        </td>
+                        <td>@item.Title</td>
+                        <td class="text-muted">@item.Description</td>
+                        <td class="text-end">
+                            <div class="d-inline-flex gap-2">
+                                <button type="button"
+                                        class="btn btn-sm btn-info js-view-image"
+                                        data-url="@Url.Action("Details", "ImageGallery", new { id = item.Id })">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+
+                                <button type="button"
+                                        class="btn btn-sm btn-warning js-edit-image"
+                                        data-url="@Url.Action("Edit", "ImageGallery", new { id = item.Id })">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+
+                                <button type="button"
+                                        class="btn btn-sm btn-danger js-delete-image"
+                                        data-url="@Url.Action("Delete", "ImageGallery", new { id = item.Id })">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- ================= MOBILE CARDS ================= -->
+<div class="d-block d-md-none">
+    @foreach (var item in Model)
+    {
+        <div class="card mb-3 shadow-sm">
+            <img src="@item.ImageUrl"
+                 class="card-img-top"
+                 style="height:180px;object-fit:cover;">
+            <div class="card-body">
+                <h5 class="card-title">@item.Title</h5>
+                <p class="card-text text-muted">@item.Description</p>
+
+                <div class="d-flex gap-2">
+                    <button type="button"
+                            class="btn btn-sm btn-info flex-fill js-view-image"
+                            data-url="@Url.Action("Details", "ImageGallery", new { id = item.Id })">
+                        View
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-sm btn-warning flex-fill js-edit-image"
+                            data-url="@Url.Action("Edit", "ImageGallery", new { id = item.Id })">
+                        Edit
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-sm btn-danger flex-fill js-delete-image"
+                            data-url="@Url.Action("Delete", "ImageGallery", new { id = item.Id })">
+                        Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- ================= MODALS ================= -->
+<div class="modal fade" id="imageViewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content rounded-4">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">
+                    <i class="bi bi-image me-2 text-primary"></i> Image Details
+                </h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="imageViewBody">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="imageFormModalContainer"></div>
+<div id="deleteConfirmModalContainer"></div>
+
+@section Scripts {
+    <script>
+        // AUTO HIDE ALERT
+        setTimeout(() => $(".alert").alert('close'), 3000);
+
+        // ADD
+        $(document).on("click", ".js-add-image", function () {
+            $.get($(this).data("url"), function (html) {
+                $("#imageFormModalContainer").html(html);
+                new bootstrap.Modal(document.getElementById('imageFormModal')).show();
+            });
+        });
+
+        // VIEW
+        $(document).on("click", ".js-view-image", function () {
+            const modal = new bootstrap.Modal(document.getElementById('imageViewModal'));
+            modal.show();
+            $("#imageViewBody").load($(this).data("url"));
+        });
+
+        // EDIT
+        $(document).on("click", ".js-edit-image", function () {
+            $.get($(this).data("url"), function (html) {
+                $("#imageFormModalContainer").html(html);
+                new bootstrap.Modal(document.getElementById('imageFormModal')).show();
+            });
+        });
+
+        // CREATE / EDIT SUBMIT
+        $(document).on("submit", "#imageGalleryForm", function (e) {
+            e.preventDefault();
+
+            const form = this;
+
+            $.ajax({
+                url: form.action,
+                type: "POST",
+                data: new FormData(form),
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    if (res.success) {
+                        location.reload();
+                    } else {
+                        $("#imageFormModalContainer").html(res);
+                    }
+                }
+            });
+        });
+
+        // DELETE CONFIRM
+        $(document).on("click", ".js-delete-image", function () {
+            $.get($(this).data("url"), function (html) {
+                $("#deleteConfirmModalContainer").html(html);
+                new bootstrap.Modal(document.getElementById('deleteImageModal')).show();
+            });
+        });
+
+        // DELETE POST
+        $(document).on("submit", "#deleteImageForm", function (e) {
+            e.preventDefault();
+            $.post(this.action, $(this).serialize(), function () {
+                location.reload();
+            });
+        });
+    </script>
+}
