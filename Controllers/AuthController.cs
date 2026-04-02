@@ -192,5 +192,40 @@ namespace InstitutionPanel.Controllers
 
 
         #endregion
+
+        #region reset password section
+
+        [HttpGet]
+        public async Task<IActionResult> ResetPassword(Guid id)
+        {
+            var user = await _authService.GetUserDetailsByIdAsync(id);
+
+            if (user == null)
+                return NotFound();
+
+            return PartialView("_ResetPassword", user.Id.ToString());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetPassword(string userId, string newPassword)
+        {
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(newPassword))
+                return PartialView("_ResetPassword", userId);
+
+            var result = await _authService.ResetPasswordByIdAsync(userId, newPassword);
+
+            if (!result.Success)
+            {
+                ModelState.AddModelError("", result.Message);
+                return PartialView("_ResetPassword", userId);
+            }
+
+            TempData["SuccessMessage"] = "User password updated successfully.";
+            return Json(new { success = true });
+        }
+
+        #endregion
+
     }
 }
