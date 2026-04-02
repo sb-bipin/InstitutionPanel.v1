@@ -8,6 +8,7 @@ using InstitutionPanel.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace InstitutionPanel.Services.Implementations
 {
@@ -193,6 +194,29 @@ namespace InstitutionPanel.Services.Implementations
             var result = await _userManager.UpdateAsync(user);
 
             return ApiResponse<bool>.SuccessResponse(true, "User updated successfully");
+        }
+
+        public async Task<ApiResponse<bool>> ResetPasswordByIdAsync(string userId, string newPassword)
+        {
+            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(newPassword))
+                return ApiResponse<bool>.FailureResponse("Id or new password is missing.");
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user is null)
+                return ApiResponse<bool>.FailureResponse("User not found.");
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user, token, newPassword);
+
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors.Select(e => e.Description).ToList();
+
+                return ApiResponse<bool>.FailureResponse(
+                    string.Join("", errors)
+                );
+            }
+            return ApiResponse<bool>.SuccessResponse(true, "Password reset successfully.");
         }
 
     }

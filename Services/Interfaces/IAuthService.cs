@@ -16,6 +16,7 @@ namespace InstitutionPanel.Services.Interfaces
         Task<ApiResponse<List<ApplicationUserVM>>> GetAllUsersAsync();
         Task<ApplicationUserVM> GetUserDetailsByIdAsync(Guid id);
         Task<ApiResponse<bool>> UpdateUserAsync(UserDTO model);
+        Task<ApiResponse<bool>> ResetPasswordByIdAsync(string userId, string newPassword);
 
     }
 }
